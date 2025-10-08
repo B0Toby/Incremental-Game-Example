@@ -27,7 +27,12 @@ button.onmouseup = () => {
 };
 button.style.transition = "transform 0.1s ease-in-out";
 
-setInterval(() => {
-  counter++;
-  counterDiv.textContent = `${counter} Games`;
-}, 1000);
+let lastTimestamp = performance.now();
+function animate(now: number) {
+  const deltaSeconds = (now - lastTimestamp) / 1000;
+  counter += deltaSeconds;
+  counterDiv.textContent = `${counter.toFixed(2)} Games`;
+  lastTimestamp = now;
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
