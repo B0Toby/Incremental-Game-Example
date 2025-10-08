@@ -14,6 +14,8 @@ counterDiv.textContent = "0 Games";
 document.body.appendChild(counterDiv);
 
 let counter = 0;
+let growthRate = 0;
+
 button.onclick = () => {
   counter++;
   counterDiv.textContent = `${counter} Games`;
@@ -30,9 +32,27 @@ button.style.transition = "transform 0.1s ease-in-out";
 let lastTimestamp = performance.now();
 function animate(now: number) {
   const deltaSeconds = (now - lastTimestamp) / 1000;
-  counter += deltaSeconds;
-  counterDiv.textContent = `${counter.toFixed(2)} Games`;
+  counter += growthRate * deltaSeconds;
+  updateDisplay();
   lastTimestamp = now;
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
+
+const upgradeButton = document.createElement("button");
+upgradeButton.textContent = "Game Developer (Cost: 10 Games)";
+upgradeButton.disabled = true;
+document.body.appendChild(upgradeButton);
+
+upgradeButton.onclick = () => {
+  if (counter >= 10) {
+    counter -= 10;
+    growthRate += 1;
+    updateDisplay();
+  }
+};
+
+function updateDisplay() {
+  counterDiv.textContent = `${counter.toFixed(2)} Games`;
+  upgradeButton.disabled = counter < 10;
+}
