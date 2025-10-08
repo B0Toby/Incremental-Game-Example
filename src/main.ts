@@ -26,3 +26,8 @@ button.onmouseup = () => {
   button.style.transform = "scale(1)";
 };
 button.style.transition = "transform 0.1s ease-in-out";
+
+setInterval(() => {
+  counter++;
+  counterDiv.textContent = `${counter} Games`;
+}, 1000);
