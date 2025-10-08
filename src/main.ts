@@ -6,5 +6,23 @@ document.body.innerHTML = `
 `;
 
 const button = document.createElement("button");
-button.textContent = "💩";
+button.textContent = "🎮";
 document.body.appendChild(button);
+
+const counterDiv = document.createElement("div");
+counterDiv.textContent = "0 Games";
+document.body.appendChild(counterDiv);
+
+let counter = 0;
+button.onclick = () => {
+  counter++;
+  counterDiv.textContent = `${counter} Games`;
+};
+
+button.onmousedown = () => {
+  button.style.transform = "scale(1.5)";
+};
+button.onmouseup = () => {
+  button.style.transform = "scale(1)";
+};
+button.style.transition = "transform 0.1s ease-in-out";
