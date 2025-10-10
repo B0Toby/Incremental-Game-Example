@@ -56,3 +56,7 @@ function updateDisplay() {
   counterDiv.textContent = `${counter.toFixed(2)} Games`;
   upgradeButton.disabled = counter < 10;
 }
+
+console.log("Hello this is Eric Cai");
+
+console.log("Thursday's section");
