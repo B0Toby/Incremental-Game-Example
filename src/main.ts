@@ -13,11 +13,11 @@ button.appendChild(img);
 document.body.appendChild(button);
 
 const counterDiv = document.createElement("div");
-counterDiv.textContent = "0 Games";
+counterDiv.textContent = "0 games";
 document.body.appendChild(counterDiv);
 
 const rateDiv = document.createElement("div");
-rateDiv.textContent = "Rate: 0.00 Games/sec";
+rateDiv.textContent = "per second: 0 games";
 document.body.appendChild(rateDiv);
 
 const purchasesHeader = document.createElement("div");
@@ -48,12 +48,48 @@ interface Item {
   name: string;
   baseCost: number;
   rate: number;
+  description: string;
 }
 
 const availableItems: Item[] = [
-  { key: "dev", name: "Game Developer", baseCost: 10, rate: 0.1 },
-  { key: "indie", name: "Indie Game Studio", baseCost: 100, rate: 2.0 },
-  { key: "aaa", name: "AAA Game Company", baseCost: 1000, rate: 50.0 },
+  {
+    key: "cursor",
+    name: "Cursor",
+    baseCost: 10,
+    rate: 1,
+    description: "Autoclicks once every 10 seconds.",
+  },
+  {
+    key: "dev",
+    name: "Game Developer",
+    baseCost: 50,
+    rate: 10,
+    description: "Writes lines of code that slowly build your game.",
+  },
+  {
+    key: "indie",
+    name: "Indie Game Studio",
+    baseCost: 200,
+    rate: 50,
+    description:
+      "A scrappy team with big dreams and tiny budgets. Sometimes they make masterpieces.",
+  },
+  {
+    key: "aaa",
+    name: "AAA Game Company",
+    baseCost: 1000,
+    rate: 300,
+    description:
+      "A massive studio with hundreds of employees. Their sequels sell millions, bugs included.",
+  },
+  {
+    key: "ai",
+    name: "AI Game Maker",
+    baseCost: 5000,
+    rate: 1000,
+    description:
+      "An advanced neural net that designs games faster than you can play them.",
+  },
 ];
 
 type ItemState = {
@@ -71,6 +107,11 @@ function currentPrice(item: Item, count: number): number {
 for (const item of availableItems) {
   const btn = document.createElement("button");
   btn.className = "upgrade-button";
+  btn.title = item.description;
+
+  btn.title = `${item.name}:\nMakes ${
+    Math.round(item.rate)
+  } Games per second\n${item.description}`;
 
   const title = document.createElement("div");
   title.className = "upgrade-title";
@@ -113,13 +154,13 @@ for (const item of availableItems) {
 }
 
 function updateDisplay() {
-  counterDiv.textContent = `${counter.toFixed(2)} Games`;
-  rateDiv.textContent = `Rate: ${growthRate.toFixed(2)} Games/sec`;
+  counterDiv.textContent = `${Math.round(counter)} games`;
+  rateDiv.textContent = `per second: ${Math.round(growthRate)} games`;
 
   for (const item of availableItems) {
     const st = itemStateByKey.get(item.key)!;
     const price = currentPrice(item, st.count);
-    st.priceEl.textContent = `🎮 ${price.toFixed(2)}`;
+    st.priceEl.textContent = `🎮 ${Math.round(price)}`;
     st.countEl.textContent = `x${st.count}`;
     st.button.disabled = counter < price;
   }
