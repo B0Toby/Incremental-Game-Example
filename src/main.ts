@@ -1,5 +1,5 @@
-import "./style.css";
 import gameUrl from "./Microsoft Video Game Emoji.png";
+import "./style.css";
 
 const button = document.createElement("button");
 button.className = "big-button";
@@ -20,9 +20,9 @@ const rateDiv = document.createElement("div");
 rateDiv.textContent = "Rate: 0.00 Games/sec";
 document.body.appendChild(rateDiv);
 
-const countsDiv = document.createElement("div");
-countsDiv.textContent = "Purchases:";
-document.body.appendChild(countsDiv);
+const purchasesHeader = document.createElement("div");
+purchasesHeader.textContent = "Purchases:";
+document.body.appendChild(purchasesHeader);
 
 let counter = 0;
 let growthRate = 0;
@@ -35,79 +35,93 @@ button.onclick = () => {
 button.onmousedown = () => {
   img.style.transform = "scale(0.85)";
 };
-
 button.onmouseup = () => {
   img.style.transform = "scale(1.15)";
   setTimeout(() => {
     img.style.transform = "scale(1)";
   }, 100);
 };
-
 img.style.transition = "transform 0.1s ease-in-out";
 
-type Upgrade = {
+interface Item {
+  key: string;
   name: string;
-  cost: number;
+  baseCost: number;
   rate: number;
+}
+
+const availableItems: Item[] = [
+  { key: "dev", name: "Game Developer", baseCost: 10, rate: 0.1 },
+  { key: "indie", name: "Indie Game Studio", baseCost: 100, rate: 2.0 },
+  { key: "aaa", name: "AAA Game Company", baseCost: 1000, rate: 50.0 },
+];
+
+type ItemState = {
   count: number;
   button: HTMLButtonElement;
   priceEl: HTMLElement;
   countEl: HTMLElement;
 };
+const itemStateByKey = new Map<string, ItemState>();
 
-function createUpgrade(name: string, cost: number, rate: number): Upgrade {
-  const button = document.createElement("button");
-  button.className = "upgrade-button";
+function currentPrice(item: Item, count: number): number {
+  return item.baseCost * Math.pow(1.15, count);
+}
+
+for (const item of availableItems) {
+  const btn = document.createElement("button");
+  btn.className = "upgrade-button";
 
   const title = document.createElement("div");
   title.className = "upgrade-title";
-  title.textContent = name;
+  title.textContent = item.name;
 
   const row = document.createElement("div");
   row.className = "upgrade-row";
 
   const priceEl = document.createElement("div");
   priceEl.className = "upgrade-price";
-  priceEl.textContent = `🎮 ${cost}`;
+  priceEl.textContent = `🎮 ${currentPrice(item, 0).toFixed(2)}`;
 
   const countEl = document.createElement("div");
   countEl.className = "upgrade-count";
   countEl.textContent = "x0";
 
   row.append(priceEl, countEl);
-  button.append(title, row);
-  button.disabled = true;
-  document.body.appendChild(button);
+  btn.append(title, row);
+  btn.disabled = true;
 
-  return { name, cost, rate, count: 0, button, priceEl, countEl };
-}
-
-const upgrades: Upgrade[] = [
-  createUpgrade("Game Developer", 10, 0.1),
-  createUpgrade("Indie Game Studio", 100, 2.0),
-  createUpgrade("AAA Game Company", 1000, 50.0),
-];
-
-for (const u of upgrades) {
-  u.button.onclick = () => {
-    if (counter >= u.cost) {
-      counter -= u.cost;
-      u.count += 1;
-      growthRate += u.rate;
-      u.cost = u.cost * 1.15;
+  btn.onclick = () => {
+    const st = itemStateByKey.get(item.key)!;
+    const costNow = currentPrice(item, st.count);
+    if (counter >= costNow) {
+      counter -= costNow;
+      st.count += 1;
+      growthRate += item.rate;
       updateDisplay();
     }
   };
+
+  document.body.appendChild(btn);
+
+  itemStateByKey.set(item.key, {
+    count: 0,
+    button: btn,
+    priceEl,
+    countEl,
+  });
 }
 
 function updateDisplay() {
   counterDiv.textContent = `${counter.toFixed(2)} Games`;
   rateDiv.textContent = `Rate: ${growthRate.toFixed(2)} Games/sec`;
 
-  for (const u of upgrades) {
-    u.button.disabled = counter < u.cost;
-    u.priceEl.textContent = `🎮 ${u.cost.toFixed(2)}`;
-    u.countEl.textContent = `x${u.count}`;
+  for (const item of availableItems) {
+    const st = itemStateByKey.get(item.key)!;
+    const price = currentPrice(item, st.count);
+    st.priceEl.textContent = `🎮 ${price.toFixed(2)}`;
+    st.countEl.textContent = `x${st.count}`;
+    st.button.disabled = counter < price;
   }
 }
 
