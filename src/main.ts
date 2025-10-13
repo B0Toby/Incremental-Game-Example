@@ -83,6 +83,7 @@ for (const u of upgrades) {
       counter -= u.cost;
       u.count += 1;
       growthRate += u.rate;
+      u.cost = u.cost * 1.15;
       updateDisplay();
     }
   };
@@ -94,6 +95,7 @@ function updateDisplay() {
 
   for (const u of upgrades) {
     u.button.disabled = counter < u.cost;
+    u.priceEl.textContent = `🎮 ${u.cost.toFixed(2)}`;
     u.countEl.textContent = `x${u.count}`;
   }
 }
