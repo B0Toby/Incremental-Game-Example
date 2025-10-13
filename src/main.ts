@@ -1,9 +1,9 @@
-import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
-import "./style.css";
+// import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
+// import "./style.css";
 
-document.body.innerHTML = `
-  <p>Example image asset: <img src="${exampleIconUrl}" class="icon" /></p>
-`;
+// document.body.innerHTML = `
+//   <p>Example image asset: <img src="${exampleIconUrl}" class="icon" /></p>
+// `;
 
 const button = document.createElement("button");
 button.textContent = "🎮";
@@ -15,10 +15,11 @@ document.body.appendChild(counterDiv);
 
 let counter = 0;
 let growthRate = 0;
+let developers = 0;
 
 button.onclick = () => {
   counter++;
-  counterDiv.textContent = `${counter} Games`;
+  updateDisplay();
 };
 
 button.onmousedown = () => {
@@ -40,7 +41,26 @@ function animate(now: number) {
 requestAnimationFrame(animate);
 
 const upgradeButton = document.createElement("button");
-upgradeButton.textContent = "Game Developer (Cost: 10 Games)";
+upgradeButton.className = "upgrade-button";
+
+const upgradeTitle = document.createElement("div");
+upgradeTitle.textContent = "Game Developer";
+upgradeTitle.className = "upgrade-title";
+
+const upgradeRow = document.createElement("div");
+upgradeRow.className = "upgrade-row";
+
+const upgradePrice = document.createElement("div");
+upgradePrice.textContent = "🎮 10";
+upgradePrice.className = "upgrade-price";
+
+const upgradeCount = document.createElement("div");
+upgradeCount.textContent = `x${developers}`;
+upgradeCount.className = "upgrade-count";
+
+upgradeRow.append(upgradePrice, upgradeCount);
+upgradeButton.append(upgradeTitle, upgradeRow);
+
 upgradeButton.disabled = true;
 document.body.appendChild(upgradeButton);
 
@@ -48,6 +68,7 @@ upgradeButton.onclick = () => {
   if (counter >= 10) {
     counter -= 10;
     growthRate += 1;
+    developers += 1;
     updateDisplay();
   }
 };
@@ -55,8 +76,5 @@ upgradeButton.onclick = () => {
 function updateDisplay() {
   counterDiv.textContent = `${counter.toFixed(2)} Games`;
   upgradeButton.disabled = counter < 10;
+  upgradeCount.textContent = `x${developers}`;
 }
-
-console.log("Hello this is Eric Cai");
-
-console.log("Thursday's section");
