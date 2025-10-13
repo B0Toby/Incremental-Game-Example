@@ -1,13 +1,15 @@
-// import exampleIconUrl from "./noun-paperclip-7598668-00449F.png";
-
-// document.body.innerHTML = `
-//   <p>Example image asset: <img src="${exampleIconUrl}" class="icon" /></p>
-// `;
-
 import "./style.css";
+import gameUrl from "./Microsoft Video Game Emoji.png";
 
 const button = document.createElement("button");
-button.textContent = "🎮";
+button.className = "big-button";
+
+const img = document.createElement("img");
+img.src = gameUrl;
+img.alt = "Click to produce Games";
+img.className = "big-button-img";
+
+button.appendChild(img);
 document.body.appendChild(button);
 
 const counterDiv = document.createElement("div");
@@ -30,9 +32,18 @@ button.onclick = () => {
   updateDisplay();
 };
 
-button.onmousedown = () => (button.style.transform = "scale(1.5)");
-button.onmouseup = () => (button.style.transform = "scale(1)");
-button.style.transition = "transform 0.1s ease-in-out";
+button.onmousedown = () => {
+  img.style.transform = "scale(0.85)";
+};
+
+button.onmouseup = () => {
+  img.style.transform = "scale(1.15)";
+  setTimeout(() => {
+    img.style.transform = "scale(1)";
+  }, 100);
+};
+
+img.style.transition = "transform 0.1s ease-in-out";
 
 type Upgrade = {
   name: string;
