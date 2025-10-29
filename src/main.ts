@@ -102,6 +102,15 @@ function currentPrice(item: Item, count: number): number {
   return item.baseCost * Math.pow(1.15, count);
 }
 
+// Centralized tooltip builder for upgrade buttons
+function createUpgradeTooltip(item: Item): string {
+  return [
+    `${item.name}:`,
+    `Makes ${Math.round(item.rate)} games per second`,
+    item.description,
+  ].join("\n");
+}
+
 // Refresh counters, rates, and button states
 function updateDisplay() {
   counterDiv.textContent = `${Math.round(counter)} games`;
@@ -122,9 +131,7 @@ for (const item of availableItems) {
   const btn = document.createElement("button");
   btn.className = "upgrade-button";
   // Tooltip shows production rate + description
-  btn.title = `${item.name}:\nMakes ${
-    Math.round(item.rate)
-  } Games per second\n${item.description}`;
+  btn.title = createUpgradeTooltip(item);
 
   const title = document.createElement("div");
   title.className = "upgrade-title";
