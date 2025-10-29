@@ -1,48 +1,16 @@
 import gameUrl from "./Microsoft Video Game Emoji.png";
 import "./style.css";
 
-const button = document.createElement("button");
-button.className = "big-button";
-
-const img = document.createElement("img");
-img.src = gameUrl;
-img.alt = "Click to produce Games";
-img.className = "big-button-img";
-
-button.appendChild(img);
-document.body.appendChild(button);
-
-const counterDiv = document.createElement("div");
-counterDiv.textContent = "0 games";
-document.body.appendChild(counterDiv);
-
-const rateDiv = document.createElement("div");
-rateDiv.textContent = "per second: 0 games";
-document.body.appendChild(rateDiv);
-
-const purchasesHeader = document.createElement("div");
-purchasesHeader.textContent = "Purchases:";
-document.body.appendChild(purchasesHeader);
-
+/* =========================
+   Game State (variables)
+   ========================= */
 let counter = 0;
 let growthRate = 0;
+let lastTimestamp = performance.now();
 
-button.onclick = () => {
-  counter += 1;
-  updateDisplay();
-};
-
-button.onmousedown = () => {
-  img.style.transform = "scale(0.85)";
-};
-button.onmouseup = () => {
-  img.style.transform = "scale(1.15)";
-  setTimeout(() => {
-    img.style.transform = "scale(1)";
-  }, 100);
-};
-img.style.transition = "transform 0.1s ease-in-out";
-
+/* =========================
+   Types & Item Data
+   ========================= */
 interface Item {
   key: string;
   name: string;
@@ -92,6 +60,34 @@ const availableItems: Item[] = [
   },
 ];
 
+/* =========================
+   UI Elements
+   ========================= */
+const button = document.createElement("button");
+button.className = "big-button";
+
+const img = document.createElement("img");
+img.src = gameUrl;
+img.alt = "Click to produce Games";
+img.className = "big-button-img";
+button.appendChild(img);
+document.body.appendChild(button);
+
+const counterDiv = document.createElement("div");
+counterDiv.textContent = "0 games";
+document.body.appendChild(counterDiv);
+
+const rateDiv = document.createElement("div");
+rateDiv.textContent = "per second: 0 games";
+document.body.appendChild(rateDiv);
+
+const purchasesHeader = document.createElement("div");
+purchasesHeader.textContent = "Purchases:";
+document.body.appendChild(purchasesHeader);
+
+/* =========================
+   Upgrade System
+   ========================= */
 type ItemState = {
   count: number;
   button: HTMLButtonElement;
@@ -104,11 +100,23 @@ function currentPrice(item: Item, count: number): number {
   return item.baseCost * Math.pow(1.15, count);
 }
 
+function updateDisplay() {
+  counterDiv.textContent = `${Math.round(counter)} games`;
+  rateDiv.textContent = `per second: ${Math.round(growthRate)} games`;
+
+  for (const item of availableItems) {
+    const st = itemStateByKey.get(item.key)!;
+    const price = currentPrice(item, st.count);
+    st.priceEl.textContent = `🎮 ${Math.round(price)}`;
+    st.countEl.textContent = `x${st.count}`;
+    st.button.disabled = counter < price;
+  }
+}
+
+/* build upgrade buttons */
 for (const item of availableItems) {
   const btn = document.createElement("button");
   btn.className = "upgrade-button";
-  btn.title = item.description;
-
   btn.title = `${item.name}:\nMakes ${
     Math.round(item.rate)
   } Games per second\n${item.description}`;
@@ -153,20 +161,28 @@ for (const item of availableItems) {
   });
 }
 
-function updateDisplay() {
-  counterDiv.textContent = `${Math.round(counter)} games`;
-  rateDiv.textContent = `per second: ${Math.round(growthRate)} games`;
+/* =========================
+   Interaction (click/press)
+   ========================= */
+button.onclick = () => {
+  counter += 1;
+  updateDisplay();
+};
 
-  for (const item of availableItems) {
-    const st = itemStateByKey.get(item.key)!;
-    const price = currentPrice(item, st.count);
-    st.priceEl.textContent = `🎮 ${Math.round(price)}`;
-    st.countEl.textContent = `x${st.count}`;
-    st.button.disabled = counter < price;
-  }
-}
+button.onmousedown = () => {
+  img.style.transform = "scale(0.85)";
+};
+button.onmouseup = () => {
+  img.style.transform = "scale(1.15)";
+  setTimeout(() => {
+    img.style.transform = "scale(1)";
+  }, 100);
+};
+img.style.transition = "transform 0.1s ease-in-out";
 
-let lastTimestamp = performance.now();
+/* =========================
+   Game Loop
+   ========================= */
 function animate(now: number) {
   const dt = (now - lastTimestamp) / 1000;
   counter += growthRate * dt;
