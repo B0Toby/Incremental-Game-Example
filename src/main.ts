@@ -4,9 +4,9 @@ import "./style.css";
 /* =========================
    Game State (variables)
    ========================= */
-let counter = 0;
-let growthRate = 0;
-let lastTimestamp = performance.now();
+let counter = 0; // total games produced
+let growthRate = 0; // games produced per second by upgrades
+let lastTimestamp = performance.now(); // track time for smooth incremental growth
 
 /* =========================
    Types & Item Data
@@ -19,6 +19,7 @@ interface Item {
   description: string;
 }
 
+// Available upgrades (data-driven design)
 const availableItems: Item[] = [
   {
     key: "cursor",
@@ -96,10 +97,12 @@ type ItemState = {
 };
 const itemStateByKey = new Map<string, ItemState>();
 
+// Exponential cost growth formula: each purchase increases cost by 15%
 function currentPrice(item: Item, count: number): number {
   return item.baseCost * Math.pow(1.15, count);
 }
 
+// Refresh counters, rates, and button states
 function updateDisplay() {
   counterDiv.textContent = `${Math.round(counter)} games`;
   rateDiv.textContent = `per second: ${Math.round(growthRate)} games`;
@@ -109,14 +112,16 @@ function updateDisplay() {
     const price = currentPrice(item, st.count);
     st.priceEl.textContent = `🎮 ${Math.round(price)}`;
     st.countEl.textContent = `x${st.count}`;
+    // Disable upgrade if not enough resources
     st.button.disabled = counter < price;
   }
 }
 
-/* build upgrade buttons */
+/* build upgrade buttons for each item */
 for (const item of availableItems) {
   const btn = document.createElement("button");
   btn.className = "upgrade-button";
+  // Tooltip shows production rate + description
   btn.title = `${item.name}:\nMakes ${
     Math.round(item.rate)
   } Games per second\n${item.description}`;
@@ -140,6 +145,7 @@ for (const item of availableItems) {
   btn.append(title, row);
   btn.disabled = true;
 
+  // Purchase handler: deduct cost, increment count, increase growth rate
   btn.onclick = () => {
     const st = itemStateByKey.get(item.key)!;
     const costNow = currentPrice(item, st.count);
@@ -164,11 +170,13 @@ for (const item of availableItems) {
 /* =========================
    Interaction (click/press)
    ========================= */
+// Each click increases counter by 1
 button.onclick = () => {
   counter += 1;
   updateDisplay();
 };
 
+// Visual feedback for press & release
 button.onmousedown = () => {
   img.style.transform = "scale(0.85)";
 };
@@ -183,6 +191,7 @@ img.style.transition = "transform 0.1s ease-in-out";
 /* =========================
    Game Loop
    ========================= */
+// Uses delta time so production scales smoothly regardless of frame rate
 function animate(now: number) {
   const dt = (now - lastTimestamp) / 1000;
   counter += growthRate * dt;
