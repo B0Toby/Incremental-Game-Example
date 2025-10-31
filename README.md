@@ -1,3 +1,11 @@
 # CMPM 121 D1 Project
 
-This is the starting point for your CMPM 121 D1 project. The goal of this project is to create a simple web application using TypeScript, Vite, and modern web development practices. Students should make sure to remove _this_ content from their README.md file and replace it with their own project documentation.
+A simple incremental game where you produce “games” by clicking and buy upgrades to increase production.
+
+Peer Inspired Changes:
+
+I implemented a floating “+1” number popup animation that appears each time the player clicks.
+This was inspired by Planet Clicker: <https://github.com/inyoo403/D1.a>
+
+Made the main click button enlarge on mouse hover (and return to normal on mouse out) using a CSS `:hover` transform.\
+Inspired by UriosteguiM12’s project: <https://github.com/UriosteguiM12/cmpm-121-f25-d1>

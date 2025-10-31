@@ -130,7 +130,6 @@ function updateDisplay() {
 for (const item of availableItems) {
   const btn = document.createElement("button");
   btn.className = "upgrade-button";
-  // Tooltip shows production rate + description
   btn.title = createUpgradeTooltip(item);
 
   const title = document.createElement("div");
@@ -175,13 +174,30 @@ for (const item of availableItems) {
 }
 
 /* =========================
+   Floating +1 feedback (inspired by https://github.com/inyoo403/D1.a)
+   ========================= */
+function spawnFloatingPlusOne(x: number, y: number, amount = 1) {
+  const el = document.createElement("div");
+  el.className = "floating-plus";
+  el.textContent = `+${amount}`;
+  // place at viewport coords
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  document.body.appendChild(el);
+  // clean up after the CSS animation
+  const remove = () => el.remove();
+  el.addEventListener("animationend", remove, { once: true });
+}
+
+/* =========================
    Interaction (click/press)
    ========================= */
-// Each click increases counter by 1
-button.onclick = () => {
+// Each click increases counter by 1 + show a floating “+1”
+button.addEventListener("click", (e: MouseEvent) => {
   counter += 1;
   updateDisplay();
-};
+  spawnFloatingPlusOne(e.clientX, e.clientY, 1);
+});
 
 // Visual feedback for press & release
 button.onmousedown = () => {
